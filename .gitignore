@@ -1,0 +1,5 @@
+/vendor/
+/downloads/*.csv
+composer.lock
+.DS_Store
+Thumbs.db

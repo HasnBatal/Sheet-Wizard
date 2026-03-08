@@ -1,0 +1,173 @@
+========================================
+CUSTOM FUNCTION TEST EXAMPLES
+========================================
+
+Use these examples to test the new custom function feature with sample_data.csv
+
+========================================
+EXAMPLE 1: Extract Email Domain
+========================================
+Column: Email
+Custom Function:
+function customTransform($value) {
+    $parts = explode('@', $value);
+    return isset($parts[1]) ? $parts[1] : $value;
+}
+
+Expected Result: example.com
+
+========================================
+EXAMPLE 2: Format Phone Numbers
+========================================
+Column: Phone
+Custom Function:
+function customTransform($value) {
+    $clean = preg_replace('/[^0-9]/', '', $value);
+    if (strlen($clean) === 7) {
+        return preg_replace('/^(\d{3})(\d{4})$/', '$1-$2', $clean);
+    }
+    return $value;
+}
+
+Expected Result: 555-1234
+
+========================================
+EXAMPLE 3: City to Uppercase with Pipeline
+========================================
+Column: City
+Pipeline: trim | strtoupper
+Custom Function: (leave empty)
+
+Expected Result: NEW YORK
+
+========================================
+EXAMPLE 4: Name to Initials
+========================================
+Column: Name
+Custom Function:
+function customTransform($value) {
+    $parts = explode(' ', trim($value));
+    $initials = '';
+    foreach ($parts as $part) {
+        $initials .= strtoupper(substr($part, 0, 1));
+    }
+    return $initials;
+}
+
+Expected Result: JD (for John Doe)
+
+========================================
+EXAMPLE 5: Email Hash (Pipeline + Custom)
+========================================
+Column: Email
+Pipeline: trim | strtolower
+Custom Function:
+function customTransform($value) {
+    return md5($value);
+}
+
+Expected Result: MD5 hash of lowercase email
+
+========================================
+EXAMPLE 6: Add Prefix to Names
+========================================
+Column: Name
+Custom Function:
+function customTransform($value) {
+    return 'Mr./Ms. ' . $value;
+}
+
+Expected Result: Mr./Ms. John Doe
+
+========================================
+EXAMPLE 7: Extract First Name Only
+========================================
+Column: Name
+Custom Function:
+function customTransform($value) {
+    $parts = explode(' ', trim($value));
+    return $parts[0];
+}
+
+Expected Result: John
+
+========================================
+EXAMPLE 8: URL Encode City Names
+========================================
+Column: City
+Pipeline: urlencode
+Custom Function: (leave empty)
+
+Expected Result: New+York
+
+========================================
+EXAMPLE 9: Generate Username from Email
+========================================
+Column: Email
+Custom Function:
+function customTransform($value) {
+    $parts = explode('@', $value);
+    $username = $parts[0];
+    return strtolower(str_replace('.', '_', $username));
+}
+
+Expected Result: john (from john@example.com)
+
+========================================
+EXAMPLE 10: Conditional Formatting
+========================================
+Column: City
+Custom Function:
+function customTransform($value) {
+    $length = strlen($value);
+    if ($length > 10) {
+        return strtoupper($value) . ' (LONG)';
+    }
+    return $value;
+}
+
+Expected Result: PHILADELPHIA (LONG)
+
+========================================
+ERROR TESTING
+========================================
+
+Test 1 - Invalid Function Name:
+function myFunction($value) {
+    return $value;
+}
+Expected: Error message about function name
+
+Test 2 - Syntax Error:
+function customTransform($value) {
+    return $value
+}
+Expected: Syntax error message (missing semicolon)
+
+Test 3 - Dangerous Function:
+function customTransform($value) {
+    return exec($value);
+}
+Expected: Error about dangerous function
+
+========================================
+ADVANCED COMBINATIONS
+========================================
+
+Example: Complete Email Processing
+Column: Email
+Options: ✓ Trim Spaces, ✓ Remove Duplicates
+Pipeline: strtolower
+Custom Function:
+function customTransform($value) {
+    $parts = explode('@', $value);
+    return isset($parts[1]) ? $parts[1] : $value;
+}
+
+This will:
+1. Trim spaces
+2. Convert to lowercase
+3. Extract domain
+4. Remove duplicate domains
+
+========================================
